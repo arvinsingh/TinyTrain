@@ -23,7 +23,7 @@ uv sync
 
 | Modules | Status | Features | Tests |
 |---|---|---|---|
-| Core autograd | todo | Tensor class (NumPy / CuPy backend) · Topological-sort backward pass · differentiable ops · Broadcasting, batched matmul, slicing | - |
+| Core autograd | In Progress | Tensor class (NumPy / CuPy backend) · Topological-sort backward pass · differentiable ops · Broadcasting, batched matmul, slicing | - |
 | NN modules | todo | Module base (params, zero_grad, train/eval) · Linear, Embedding · LayerNorm, Dropout · Sequential, ReLU, GELU modules | - |
 | Loss & functional | todo | Stable softmax / Log softmax · Cross entropy, MSE loss · Scaled dot-product attention | - |
 | Optimizers | todo | SGD · AdamW | - |
@@ -32,6 +32,26 @@ uv sync
 | Transformer utils | todo | MHA, FeedForward, TransformerBlock (pre-norm) · Module.cuda() / .cpu(), save/load · Gradient clipping · LR schedulers (Step, Cosine, Warmup) | - |
 | End-to-end | todo | Linear regression (CPU + GPU) · Transformer LM · Attention benchmark | - |
 
+## Planned Ops support (In progress)
+
+- Add
+- Mul
+- Neg
+- Div
+- Pow
+- MatMul
+- Sum
+- Mean
+- Max
+- Reshape
+- Transpose
+- Slice
+- Exp
+- Log
+- Tanh
+- Sigmoid
+- cat
+
 ## Structure
 
 core/ - tensor, autograd, ops, modules, optimizers, kernels
@@ -39,3 +59,5 @@ core/ - tensor, autograd, ops, modules, optimizers, kernels
 tests/ - unit and integration tests per milestone
 
 script/ - model training scripts
+
+example/ - training examples (real/dummy data)
