@@ -23,34 +23,36 @@ uv sync
 
 | Modules | Status | Features | Tests |
 |---|---|---|---|
-| Core autograd | In Progress | Tensor class (NumPy / CuPy backend) · Topological-sort backward pass · differentiable ops · Broadcasting, batched matmul, slicing | - |
+| Core autograd | In Progress | Tensor class (NumPy / CuPy backend) · Topological-sort backward pass · differentiable ops · Broadcasting, batched matmul, slicing | test_ops.py, test_tensor.py; 36 test cases |
 | NN modules | todo | Module base (params, zero_grad, train/eval) · Linear, Embedding · LayerNorm, Dropout · Sequential, ReLU, GELU modules | - |
 | Loss & functional | todo | Stable softmax / Log softmax · Cross entropy, MSE loss · Scaled dot-product attention | - |
 | Optimizers | todo | SGD · AdamW | - |
 | Data loading | todo | DataLoader (batch, shuffle, device) · Yields Tensor objects directly | - |
-| Triton kernels | todo | CuPy <-> PyTorch CUDA bridge · Tiled matmul · Flash attention (online softmax, causal) · Fused LayerNorm fwd + bwd · ReLU / GELU fwd + bwd · Auto-dispatch GPU/CPU | - |
+| Triton kernels | In progress | CuPy <-> PyTorch CUDA bridge · Tiled matmul · Flash attention (online softmax, causal) · Fused LayerNorm fwd + bwd · ReLU / GELU fwd + bwd · Auto-dispatch GPU/CPU | - |
 | Transformer utils | todo | MHA, FeedForward, TransformerBlock (pre-norm) · Module.cuda() / .cpu(), save/load · Gradient clipping · LR schedulers (Step, Cosine, Warmup) | - |
 | End-to-end | todo | Linear regression (CPU + GPU) · Transformer LM · Attention benchmark | - |
 
 ## Planned Ops support (In progress)
 
-- Add
-- Mul
-- Neg
-- Div
-- Pow
-- MatMul
-- Sum
-- Mean
-- Max
-- Reshape
-- Transpose
-- Slice
-- Exp
-- Log
-- Tanh
-- Sigmoid
-- cat
+- Add (Done)
+- Mul (Done)
+- Neg (Done)
+- Div (Done)
+- Pow (Done)
+- Sum (Done)
+- Mean (Done)
+- Max (Done)
+- Reshape (Done)
+- Transpose (Done)
+- Slice (Done)
+- Exp (Done)
+- Log (Done)
+- Tanh (Done)
+- Sigmoid (Done)
+- cat (Done)
+- MatMul (TBD)
+- ReLU (TBD)
+- GeLU (TBD)
 
 ## Structure
 
