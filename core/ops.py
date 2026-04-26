@@ -1,6 +1,22 @@
 """Autograd operations with forward/backward implementations."""
 import numpy as np
 from core.tensor import Tensor, Context, _get_xp, _wrap, no_grad
+from core.kernels.bridge import can_use_triton, cupy_to_torch, torch_to_cupy
+
+# import Triton kernels if available (I check availability again in the ops to avoid import issues on CPU-only runners)
+try:
+    from core.kernels.matmul import triton_matmul
+except ImportError:
+    triton_matmul = None
+
+try:
+    from core.kernels.activations import (
+        triton_relu, triton_relu_bwd,
+        triton_gelu, triton_gelu_bwd,
+    )
+except ImportError:
+    triton_relu = triton_relu_bwd = None
+    triton_gelu = triton_gelu_bwd = None
 
 
 class Op:
@@ -84,11 +100,36 @@ class Pow(Op):
 class MatMul(Op):
     @staticmethod
     def forward(ctx, a, b):
-        pass
+        ctx.save_for_backward(a, b)
+        if a.ndim == 2 and b.ndim == 2:
+            if can_use_triton(a) and triton_matmul is not None:
+                return torch_to_cupy(triton_matmul(cupy_to_torch(a), cupy_to_torch(b)))
+        return a @ b
 
     @staticmethod
     def backward(ctx, grad):
-        pass
+        a, b = ctx.saved_tensors
+        xp = _get_xp(grad)
+        if a.ndim == 1 and b.ndim == 1:
+            return grad * b, grad * a
+        if a.ndim >= 2 and b.ndim >= 2:
+            if a.ndim == 2 and b.ndim == 2:
+                if can_use_triton(grad) and triton_matmul is not None:
+                    # .copy() ensures contiguous layout for Triton
+                    ga = torch_to_cupy(triton_matmul(cupy_to_torch(grad), cupy_to_torch(xp.swapaxes(b, -2, -1).copy())))
+                    gb = torch_to_cupy(triton_matmul(cupy_to_torch(xp.swapaxes(a, -2, -1).copy()), cupy_to_torch(grad)))
+                    return ga, gb
+            ga = grad @ xp.swapaxes(b, -2, -1)
+            gb = xp.swapaxes(a, -2, -1) @ grad
+            return ga, gb
+        if a.ndim == 1:
+            ga = grad @ b.T if b.ndim == 2 else grad * b
+            gb = xp.outer(a, grad) if b.ndim == 2 else a * grad
+            return ga, gb
+        # a is 2d, b is 1d
+        ga = xp.outer(grad, b)
+        gb = a.T @ grad
+        return ga, gb
 
 
 class Sum(Op):
@@ -269,21 +310,43 @@ class Sigmoid(Op):
 class ReLU(Op):
     @staticmethod
     def forward(ctx, a):
-        pass
+        ctx.save_for_backward(a)
+        if a.ndim == 2 and can_use_triton(a) and triton_relu is not None:
+            return torch_to_cupy(triton_relu(cupy_to_torch(a)))
+        xp = _get_xp(a)
+        return xp.maximum(a, 0)
 
     @staticmethod
     def backward(ctx, grad):
-        pass
+        a, = ctx.saved_tensors
+        if a.ndim == 2 and can_use_triton(grad) and triton_relu_bwd is not None:
+            return (torch_to_cupy(triton_relu_bwd(cupy_to_torch(grad), cupy_to_torch(a))),)
+        return (grad * (a > 0).astype(grad.dtype),)
 
 
 class GELU(Op):
     @staticmethod
     def forward(ctx, a):
-        pass
+        xp = _get_xp(a)
+        ctx.save_for_backward(a)
+        if a.ndim == 2 and can_use_triton(a) and triton_gelu is not None:
+            return torch_to_cupy(triton_gelu(cupy_to_torch(a)))
+        c = xp.sqrt(xp.array(2.0 / np.pi, dtype=a.dtype))
+        inner = c * (a + 0.044715 * a ** 3)
+        return (0.5 * a * (1 + xp.tanh(inner))).astype(a.dtype)
 
     @staticmethod
     def backward(ctx, grad):
-        pass
+        a, = ctx.saved_tensors
+        if a.ndim == 2 and can_use_triton(grad) and triton_gelu_bwd is not None:
+            return (torch_to_cupy(triton_gelu_bwd(cupy_to_torch(grad), cupy_to_torch(a))),)
+        xp = _get_xp(a)
+        c = xp.sqrt(xp.array(2.0 / np.pi, dtype=a.dtype))
+        inner = c * (a + 0.044715 * a ** 3)
+        tanh_inner = xp.tanh(inner)
+        dtanh = 1 - tanh_inner ** 2
+        dinner = c * (1 + 3 * 0.044715 * a ** 2)
+        return (grad * (0.5 * (1 + tanh_inner) + 0.5 * a * dtanh * dinner),)
 
 
 class Cat(Op):
