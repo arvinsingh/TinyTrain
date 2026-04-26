@@ -1,6 +1,13 @@
 """Bridge between CuPy arrays and PyTorch CUDA tensors for Triton kernel dispatch."""
-import torch
-import cupy as cp
+try:
+    import torch
+except ImportError:
+    torch = None
+
+try:
+    import cupy as cp
+except ImportError:
+    cp = None
 
 from core.kernels import triton_available
 
@@ -15,5 +22,7 @@ def torch_to_cupy(t):
 
 def can_use_triton(data):
     if not triton_available():
+        return False
+    if cp is None:
         return False
     return isinstance(data, cp.ndarray)
