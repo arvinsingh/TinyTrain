@@ -48,7 +48,6 @@ class TestOpsNumerical:
     def test_mul(self):
         self._check(lambda a, b: a * b, [(3, 4), (3, 4)])
 
-    @pytest.mark.skip(reason="Temporarily disabled, needs ops to be implemented")
     def test_matmul(self):
         self._check(lambda a, b: a @ b, [(3, 4), (4, 5)])
 
@@ -68,11 +67,9 @@ class TestOpsNumerical:
             ng = numerical_grad(fn, fresh, i)
             np.testing.assert_allclose(inp.grad, ng, atol=1e-3)
 
-    @pytest.mark.skip(reason="Temporarily disabled, needs ops to be implemented")
     def test_relu(self):
         self._check(lambda a: ops.ReLU.apply(a), [(3, 4)])
 
-    @pytest.mark.skip(reason="Temporarily disabled, needs ops to be implemented")
     def test_gelu(self):
         self._check(lambda a: ops.GELU.apply(a), [(3, 4)])
 

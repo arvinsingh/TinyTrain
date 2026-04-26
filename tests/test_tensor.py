@@ -61,11 +61,9 @@ class TestAutograd:
     def test_pow(self):
         _check_grad(lambda a: a ** 2, lambda a: a ** 2, [(3, 4)])
 
-    @pytest.mark.skip(reason="Temporarily disabled, needs ops to be implemented")
     def test_matmul_2d(self):
         _check_grad(lambda a, b: a @ b, lambda a, b: a @ b, [(3, 4), (4, 5)])
 
-    @pytest.mark.skip(reason="Temporarily disabled, needs ops to be implemented")
     def test_matmul_batch(self):
         _check_grad(lambda a, b: a @ b, lambda a, b: a @ b, [(2, 3, 4), (2, 4, 5)])
 
@@ -107,7 +105,6 @@ class TestAutograd:
     def test_sigmoid(self):
         _check_grad(lambda a: a.sigmoid(), lambda a: a.sigmoid(), [(3, 4)])
 
-    @pytest.mark.skip(reason="Temporarily disabled, needs ops to be implemented")
     def test_chain_rule(self):
         """Multi-step computation graph."""
         _check_grad(
