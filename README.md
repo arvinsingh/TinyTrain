@@ -28,7 +28,7 @@ uv sync
 | Loss & functional | todo | Stable softmax / Log softmax · Cross entropy, MSE loss · Scaled dot-product attention | - |
 | Optimizers | DONE | SGD · AdamW | test_optim.py; 3 test cases |
 | Data loading | todo | DataLoader (batch, shuffle, device) · Yields Tensor objects directly | - |
-| Triton kernels | In progress | CuPy <-> PyTorch CUDA bridge · Tiled matmul · Flash attention (online softmax, causal) · Fused LayerNorm fwd + bwd · ReLU / GELU fwd + bwd · Auto-dispatch GPU/CPU | - |
+| Triton kernels | DONE | CuPy <-> PyTorch CUDA bridge · Tiled matmul · Flash attention (online softmax, causal) · Fused LayerNorm fwd + bwd · ReLU / GELU fwd + bwd · Auto-dispatch GPU/CPU | test_kernels.py; 16 test cases |
 | Transformer utils | todo | MHA, FeedForward, TransformerBlock (pre-norm) · Module.cuda() / .cpu(), save/load · Gradient clipping · LR schedulers (Step, Cosine, Warmup) | - |
 | End-to-end | todo | Linear regression (CPU + GPU) · Transformer LM · Attention benchmark | - |
 
@@ -61,11 +61,11 @@ uv sync
 
 ## Fused Kernels
 
-- [TBD] Tiled MatMul
-- [TBD] FlashAttention (Causal)
-- [TBD] LayerNorm
-- [TBD] ReLU
-- [TBD] GELU
+- [DONE] Tiled MatMul
+- [DONE] FlashAttention (Causal)
+- [DONE] LayerNorm
+- [DONE] ReLU
+- [DONE] GELU
 
 ## NN Modules
 
