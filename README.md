@@ -1,11 +1,11 @@
 # TinyTrain
 
-A minimal deep learning framework built from scratch. NumPy backend, CuPy for GPU, Triton for fused kernels. No PyTorch at runtime, just tensors, autograd, and raw CUDA.
+A minimal deep learning library built from scratch. NumPy backend, CuPy for GPU, Triton for fused kernels. No PyTorch at runtime, just tensors, autograd, and raw CUDA.
 
 ## Goal
 
 Build every layer of a training stack by hand: autograd -> ops -> modules -> optimizers -> kernels -> training loops.
-Ultimately train a Tiny Language Model.
+Ultimately train a Tiny Transformer from scratch.
 
 ## Requirements
 
@@ -23,66 +23,57 @@ uv sync
 
 | Modules | Status | Features | Tests |
 |---|---|---|---|
-| Core autograd | DONE | Tensor class (NumPy / CuPy backend) · Topological-sort backward pass · differentiable ops · Broadcasting, batched matmul, slicing | test_ops.py, test_tensor.py; 36 test cases |
-| NN modules | todo | Module base (params, zero_grad, train/eval) · Linear, Embedding · LayerNorm, Dropout · Sequential, ReLU, GELU modules | - |
-| Loss & functional | todo | Stable softmax / Log softmax · Cross entropy, MSE loss · Scaled dot-product attention | - |
-| Optimizers | DONE | SGD · AdamW | test_optim.py; 3 test cases |
+| Core autograd | DONE | Tensor class (NumPy / CuPy backend) · Topological-sort backward pass · differentiable ops · Broadcasting, batched matmul, slicing | test_ops.py, test_tensor.py; 36 cases |
+| NN modules | DONE | Module base (params, zero_grad, train/eval) · Linear, Embedding · LayerNorm, Dropout · Sequential, ReLU, GELU modules | test_nn.py, 12 cases |
+| Loss & functional | DONE | Stable softmax / Log softmax · Cross entropy, MSE loss · Scaled dot-product attention | test_functional.py, - |
+| Optimizers | DONE | SGD · AdamW | test_optim.py; 3 cases |
 | Data loading | todo | DataLoader (batch, shuffle, device) · Yields Tensor objects directly | - |
-| Triton kernels | DONE | CuPy <-> PyTorch CUDA bridge · Tiled matmul · Flash attention (online softmax, causal) · Fused LayerNorm fwd + bwd · ReLU / GELU fwd + bwd · Auto-dispatch GPU/CPU | test_kernels.py; 16 test cases |
+| Triton kernels | DONE | CuPy <-> PyTorch CUDA bridge · Tiled matmul · Flash attention (online softmax, causal) · Fused LayerNorm fwd + bwd · ReLU / GELU fwd + bwd · Auto-dispatch GPU/CPU | test_kernels.py; 16 cases |
 | Transformer utils | todo | MHA, FeedForward, TransformerBlock (pre-norm) · Module.cuda() / .cpu(), save/load · Gradient clipping · LR schedulers (Step, Cosine, Warmup) | - |
 | End-to-end | todo | Linear regression (CPU + GPU) · Transformer LM · Attention benchmark | - |
 
 ## Ops support
 
-- [DONE] Add
-- [DONE] Mul
-- [DONE] Neg
-- [DONE] Div
-- [DONE] Pow
-- [DONE] Sum
-- [DONE] Mean
-- [DONE] Max
-- [DONE] Reshape
-- [DONE] Transpose
-- [DONE] Slice
-- [DONE] Exp
-- [DONE] Log
-- [DONE] Tanh
-- [DONE] Sigmoid
-- [DONE] cat
-- [DONE] MatMul
-- [DONE] ReLU
-- [DONE] GeLU
+- [DONE] Add, Sub, Mul, Neg, Div, pow
+- [DONE] Sum, Mean, Max
+- [DONE] Reshape, Transpose, Slice, MatMul, cat
+- [DONE] Exp, Log, Tanh, Sigmoid
+- [DONE] ReLU, GELU
 
 ## Optimizers
 
-- [DONE] Stochastic Gradient Descent
+- [DONE] SGD
 - [DONE] AdamW
 
 ## Fused Kernels
 
 - [DONE] Tiled MatMul
 - [DONE] FlashAttention (Causal)
-- [DONE] LayerNorm
-- [DONE] ReLU
-- [DONE] GELU
+- [DONE] LayerNorm fwd + bwd
+- [DONE] ReLU fwd + bwd
+- [DONE] GELU fwd + bwd
 
 ## NN Modules
 
-- [TBD] Module base class
-- [TBD] Linear
-- [TBD] Embedding
-- [TBD] Dropout
-- [TBD] ReLU
-- [TBD] GELU
-- [TBD] Multi-Head Attention
-- [TBD] Sequential
-- [TBD] Feed Forward
-- [TBD] Transformer block
+- [DONE] Module base class
+- [DONE] Linear
+- [DONE] Embedding
+- [DONE] Dropout
+- [DONE] ReLU, GELU
+- [DONE] Multi-Head Attention
+- [DONE] Sequential
+- [DONE] Feed Forward
+- [DONE] Transformer block
 
-## Functional [TBD]
+## Functional
+- [DONE] Softmax / LogSoftmax
+- [DONE] Cross-entropy 
+- [DONE] MSE loss
+- [DONE] Scaled dot-product attention
+- [DONE] MaskedFill
 
-## Utils [TBD]
+## Utils
+
 
 ## Structure
 
