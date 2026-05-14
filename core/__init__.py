@@ -1,2 +1,2 @@
 from core.tensor import Tensor, no_grad
-from . import ops, optim, utils, nn
+from . import ops, optim, utils, nn, functional, data
