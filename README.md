@@ -2,10 +2,6 @@
 
 A minimal deep learning library built from scratch. NumPy backend, CuPy for GPU, Triton for fused kernels. No PyTorch at runtime, just tensors, autograd, and raw CUDA.
 
-## Goal
-
-Build every layer of a training stack by hand: autograd -> ops -> modules -> optimizers -> kernels -> training loops.
-Ultimately train a Tiny Transformer from scratch.
 
 ## Requirements
 
@@ -18,19 +14,24 @@ Ultimately train a Tiny Transformer from scratch.
 ```bash
 uv sync
 ```
+For GPU extra
+```bash
+uv sync --extra gpu --extra triton
+```
 
 ## Roadmap
 
-| Modules | Status | Features | Tests |
+
+| Module | Status | Features | Tests |
 |---|---|---|---|
-| Core autograd | DONE | Tensor class (NumPy / CuPy backend) · Topological-sort backward pass · differentiable ops · Broadcasting, batched matmul, slicing | test_ops.py, test_tensor.py; 36 cases |
-| NN modules | DONE | Module base (params, zero_grad, train/eval) · Linear, Embedding · LayerNorm, Dropout · Sequential, ReLU, GELU modules | test_nn.py, 12 cases |
-| Loss & functional | DONE | Stable softmax / Log softmax · Cross entropy, MSE loss · Scaled dot-product attention | test_functional.py, 7 cases |
-| Optimizers | DONE | SGD · AdamW | test_optim.py; 3 cases |
-| Data loading | DONE | DataLoader (batch, shuffle, device) · Yields Tensor objects directly | - |
-| Triton kernels | DONE | CuPy <-> PyTorch CUDA bridge · Tiled matmul · Flash attention (online softmax, causal) · Fused LayerNorm fwd + bwd · ReLU / GELU fwd + bwd · Auto-dispatch GPU/CPU | test_kernels.py; 16 cases |
-| Utils | todo | MHA, FeedForward, TransformerBlock (pre-norm) · Module.cuda() / .cpu(), save/load · Gradient clipping · LR schedulers (Step, Cosine, Warmup) | - |
-| End-to-end | todo | Linear regression (CPU + GPU) · Transformer LM · Attention benchmark | - |
+| Core autograd | DONE | Tensor class · Topological-sort backward pass · Scalar/broadcast autograd · Batched matmul · Slicing · No-grad mode · Numerical gradient stress tests · Randomized shape tests · Broadcasting stress tests | `test_tensor.py`, `test_ops.py`, `test_autograd_stress.py`; 199 cases |
+| NN modules | DONE | Module base · Parameter tracking · `zero_grad()` · Linear · LayerNorm · Embedding · Dropout · Sequential · Reproducibility | `test_nn.py`; 12 cases |
+| Loss & functional | DONE | Softmax · LogSoftmax · Cross entropy · Numerical stability · Backward checks | `test_functional.py`; 7 cases |
+| Optimizers | DONE | SGD · Adam/AdamW-style optimizer · Multi-step optimizer behavior | `test_optim.py`; 3 cases |
+| Triton kernels | DONE | CuPy <-> PyTorch CUDA bridge · Tiled matmul · Flash attention (online softmax, causal) · Fused LayerNorm fwd + bwd · ReLU / GELU fwd + bwd · Auto-dispatch GPU/CPU | `test_kernels.py`; 16 cases |
+| Utils | DONE | Save/load · Gradient norm clipping · Gradient value clipping · StepLR · CosineAnnealingLR · LinearWarmupCosineDecay · Parameter counting through integration tests | `test_integration.py`; 8 utility-related cases |
+| Data loading | DONE | DataLoader yields Tensor batches · Regression training integration | `test_integration.py`; 2 cases |
+| End-to-end | DONE | MLP XOR training · TransformerBlock loss decrease · Deep gradient flow · MSE loss · MultiHeadAttention forward/backward · TransformerBlock shape/training/param count | `test_integration.py`; 11 model/training cases |
 
 ## Ops support
 
@@ -74,13 +75,14 @@ uv sync
 
 ## Utils
 
+- [DONE] Seeding
+- [DONE] Device detection
+- [DONE] Parameter counting
+- [DONE] Save / load checkpoints
+- [DONE] Gradient norm clipping
+- [DONE] Gradient value clipping
+- [DONE] StepLR
+- [DONE] CosineAnnealingLR
+- [DONE] LinearWarmupCosineDecay
 
-## Structure
-
-core/ - tensor, autograd, ops, modules, optimizers, kernels
- 
-tests/ - unit and integration tests per milestone
-
-script/ - model training scripts
-
-example/ - training examples (real/dummy data)
+---
